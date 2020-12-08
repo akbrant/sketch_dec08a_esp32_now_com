@@ -5,7 +5,7 @@
 
 
 // REPLACE WITH THE MAC Address of your receiver 
-uint8_t broadcastAddress[] = {0xF0, 0x08, 0xd1, 0xd1, 0x9d, 0x18};
+uint8_t broadcastAddress[] = {0xF0, 0x08, 0xd1, 0xd1, 0x88, 0xEC};
 
 // Define variables to store BME280 readings to be sent
 float temperature;
@@ -57,8 +57,8 @@ struct_message incomingReadings;
 
 // Callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  //Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.print(status == ESP_NOW_SEND_SUCCESS ? " Delivery Success " : " Delivery Fail ");
   if (status ==0){
     success = "Delivery Success :)";
   }
@@ -111,12 +111,16 @@ void setup() {
  
 void loop() {
 
-  Serial.print("Touch Values:");
-  Serial.println (touchRead (touchLeft));
-  Serial.println (touchRead (touchRight));
-  Serial.println (touchRead (touchRaise));
-  Serial.println (touchRead (touchFloat));
-  Serial.println (touchRead (touchPressure));
+  Serial.print("Touch Values: L ");
+  Serial.print (touchRead (touchLeft));
+  Serial.print(" R: ");
+  Serial.print (touchRead (touchRight));
+  Serial.print(" Ra: ");
+  Serial.print (touchRead (touchRaise));
+  Serial.print(" F: ");
+  Serial.print (touchRead (touchFloat));
+  Serial.print(" P: ");
+  Serial.print (touchRead (touchPressure));
   Serial.println();
   
   int plowLeft = 0;
@@ -157,7 +161,7 @@ void loop() {
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &TouchReadings, sizeof(TouchReadings));
    
   if (result == ESP_OK) {
-    Serial.println("Sent with success");
+    Serial.print(" Sent OK ");
   }
   else {
     Serial.println("Error sending the data");
