@@ -147,12 +147,14 @@ void loop() {
  
  
   // Set values to send
-  BME280Readings.temp = temperature;
-  BME280Readings.hum = humidity;
-  BME280Readings.pres = pressure;
+  TouchReadings.plowLeft = plowLeft;
+  TouchReadings.plowRight = plowRight;
+  TouchReadings.plowRaise = plowRaise;
+  TouchReadings.plowFloat = plowFloat;
+  TouchReadings.plowPressure = plowPressure;
 
   // Send message via ESP-NOW
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &BME280Readings, sizeof(BME280Readings));
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &TouchReadings, sizeof(TouchReadings));
    
   if (result == ESP_OK) {
     Serial.println("Sent with success");
@@ -161,5 +163,5 @@ void loop() {
     Serial.println("Error sending the data");
   }
 
-  delay(1000);
+  delay(100);
 }
