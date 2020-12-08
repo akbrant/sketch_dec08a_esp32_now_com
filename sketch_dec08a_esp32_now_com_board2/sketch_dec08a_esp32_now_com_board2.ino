@@ -1,17 +1,6 @@
-/*
-  Rui Santos
-  Complete project details at https://RandomNerdTutorials.com/esp-now-two-way-communication-esp32/
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files.
-  
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-*/
 
 #include <esp_now.h>
 #include <WiFi.h>
-
 #include <Wire.h>
 
 
@@ -42,6 +31,27 @@ typedef struct struct_message {
 // Create a struct_message called BME280Readings to hold sensor readings
 struct_message BME280Readings;
 
+//Setup the touch pins
+int touchLeft = 12; //no 12 // pin with touch sensor (native constant T0 can be used)
+int touchRight = 2; //work 2 //no 4  pin with touch sensor (native T4 constant can be used)
+int touchRaise = 13; //works
+int touchFloat = 32; //32 works //no 14
+int touchPressure = 33; //33 works //no 15;
+
+//Structure of touch sensor values to send
+typedef struct struct_touch_message {
+    int plowLeft;
+    int plowRight;
+    int plowRaise;
+    int plowFloat;
+    int plowPressure;
+} struct_touch_message;
+
+//Create a sttuck_touch_message to hold touch readings
+struct_touch_message TouchReadings;
+
+
+
 // Create a struct_message to hold incoming sensor readings
 struct_message incomingReadings;
 
@@ -70,8 +80,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 void setup() {
   // Init Serial Monitor
   Serial.begin(115200);
-
- 
+   
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
 
@@ -101,6 +110,41 @@ void setup() {
 }
  
 void loop() {
+
+  Serial.print("Touch Values:");
+  Serial.println (touchRead (touchLeft));
+  Serial.println (touchRead (touchRight));
+  Serial.println (touchRead (touchRaise));
+  Serial.println (touchRead (touchFloat));
+  Serial.println (touchRead (touchPressure));
+  Serial.println();
+  
+  int plowLeft = 0;
+  int plowRight = 0;
+  int plowRaise = 0;
+  int plowFloat = 0;
+  int plowPressure = 0;
+
+  
+  
+  // takes 100 readings from each touch sensor and averages the read value
+  for (int i = 0; i <100; i ++)
+  {
+    plowLeft += touchRead (touchLeft);
+    plowRight += touchRead (touchRight);
+    plowRaise += touchRead (touchRaise);
+    plowFloat += touchRead (touchFloat);
+    plowPressure += touchRead (touchPressure);
+
+  }
+   
+  plowLeft = plowLeft / 100;
+  plowRight = plowRight / 100;
+  plowRaise = plowRaise / 100;
+  plowFloat = plowFloat / 100;
+  plowPressure = plowPressure / 100;
+
+ 
  
   // Set values to send
   BME280Readings.temp = temperature;
@@ -117,5 +161,5 @@ void loop() {
     Serial.println("Error sending the data");
   }
 
-  delay(5000);
+  delay(1000);
 }
