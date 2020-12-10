@@ -2,8 +2,6 @@
 #include <esp_now.h>
 #include <WiFi.h>
 #include <Wire.h>
-#include "heltec.h"
-
 #define BAND    868E6  //you can set band here directly,e.g. 868E6,915E6
 
 // REPLACE WITH THE MAC Address of your receiver 
@@ -83,8 +81,6 @@ void setup() {
   // Init Serial Monitor
   Serial.begin(115200);
 
-  Heltec.begin(true /*DisplayEnable Enable*/, true /*LoRa Enable*/, true /*Serial Enable*/, true /*LoRa use PABOOST*/, BAND /*LoRa RF working band*/);
-
    
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -128,9 +124,6 @@ void loop() {
   Serial.print (touchRead (touchPressure));
   Serial.println();
 
-  Heltec.display -> clear();
-  Heltec.display -> drawString(0, 0, "SnowWay ... It Works!");
-  Heltec.display -> display();
   
   int plowLeft = 0;
   int plowRight = 0;
