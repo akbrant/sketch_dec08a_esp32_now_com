@@ -17,9 +17,11 @@ int valveE = 21;
 int valveF = 22;
 int powerDown = 32; 
 
-int CapacitanciaMaxima = 50; // value that gives us the certainty of touch (find that value through calibration) started at 20
+int CapacitanciaMaxima = 20; // value that gives us the certainty of touch (find that value through calibration) started at 20
 int floating = 0;  //track if plow should be locked in float mode. 
 int downPressure = 0;  //track if plow should be locked in down pressure mode. 
+int Contact = 0;
+
 
 // Define variables to store incoming readings
 int plowLeft;
@@ -45,6 +47,7 @@ struct_touch_message incomingReadings;
 
 // Callback when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+  Contact = 1;
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
   //Serial.print("Bytes received: ");
   //Serial.println(len);
@@ -69,6 +72,17 @@ void setup() {
   pinMode (valveE, OUTPUT);
   pinMode (valveF, OUTPUT);
   pinMode (powerDown, OUTPUT);
+
+  //set all solnoids to off or high in this case
+  digitalWrite (motor, HIGH);
+  digitalWrite (valveC, HIGH);
+  digitalWrite (valveF, HIGH);
+  digitalWrite (valveA, HIGH);
+  digitalWrite (valveB, HIGH);
+  digitalWrite (valveD, HIGH);
+  digitalWrite (valveE, HIGH);
+  digitalWrite (powerDown, HIGH);
+
  
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -96,7 +110,7 @@ void setup() {
 }
  
 void loop() {
-
+ 
   //Serial.println ("Touch Values via esp32 NOW radio:");
   Serial.print ("L: ");
   Serial.print (plowLeft);
@@ -114,7 +128,7 @@ void loop() {
   Serial.print (downPressure);
   Serial.println();
 
-  if (plowLeft < CapacitanciaMaxima)
+  if ((plowLeft < CapacitanciaMaxima) && Contact)
   {
     Serial.println("plow left");
     digitalWrite (motor, LOW);
@@ -126,7 +140,7 @@ void loop() {
   // check if the average value read on the touchLeft is less than the maximum capacitance
   // if true, this characterizes a touch
   // the red and green LEDs will flash with an interval of 500 ms
-  else if (plowRight < CapacitanciaMaxima)
+  else if ((plowRight < CapacitanciaMaxima) && Contact)
   {
     Serial.println("plow right");
     digitalWrite (motor, LOW);
@@ -138,7 +152,7 @@ void loop() {
       digitalWrite (valveE, HIGH);
     }
   }
-  else if (plowRaise < CapacitanciaMaxima)
+  else if ((plowRaise < CapacitanciaMaxima) && Contact)
   {
     floating = 0;
     downPressure = 0;
@@ -153,7 +167,7 @@ void loop() {
     digitalWrite (valveE, HIGH);
     digitalWrite (powerDown, HIGH);
   }
-  else if (plowFloat < CapacitanciaMaxima)
+  else if ((plowFloat < CapacitanciaMaxima) && Contact)
   {
     floating = 1;
     downPressure = 0;
@@ -169,7 +183,7 @@ void loop() {
     digitalWrite (powerDown, HIGH);
     
   }
-  else if (plowPressure < CapacitanciaMaxima)
+  else if ((plowPressure < CapacitanciaMaxima) && Contact)
   {
     floating = 0;
     downPressure = 1;
@@ -206,5 +220,5 @@ void loop() {
     }       
   }
   
-  delay (400);
+  delay (100);
 }
