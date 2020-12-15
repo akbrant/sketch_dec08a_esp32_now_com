@@ -92,39 +92,39 @@ void loop()
 {
   loopcount ++;
   controllers.poll(); //read all controllers at once
-  if(controllers.pressed(0, GameControllers::START))  //check if Start was pressed since last loop
+  if(controllers.down(0, GameControllers::START))  //check if Start was pressed since last loop
     Serial.println("Start was pressed.");
-  if(controllers.pressed(0, GameControllers::SELECT))  //check if Start was pressed since last loop
+  if(controllers.down(0, GameControllers::SELECT))  //check if Start was pressed since last loop
     Serial.println("Select was pressed.");
     
- if(controllers.pressed(0, GameControllers::A)) {  //if A button is hold down 
-    Serial.println("A DP");
+ if(controllers.down(0, GameControllers::B)) {  //if B button is hold down 
+    Serial.println("B DP");
     plowPressure = 10;
   } else {
     plowPressure =200;
   }
-
- if(controllers.pressed(0, GameControllers::B)) {  //if A button is hold down
-    Serial.println("B FLOAT");
+/*
+ if(controllers.pressed(0, GameControllers::A)) {  //if A button is hold down
+    Serial.println("A FLOAT");
     plowFloat = 10;
   } else {
     plowFloat =200;
   }
-  
+ */
   if(controllers.down(0, GameControllers::UP)) {  //check if button it's currently pressed down
     Serial.println("UP");
     plowRaise = 10;
   } else {
     plowRaise =200;
   }
-  /*
+  
   if(controllers.down(0, GameControllers::DOWN)) {  //check if button it's currently pressed down
     Serial.println("DOWN FLOAT");
     plowFloat = 10;
   } else {
     plowFloat =200;
   } 
-  */   
+    
   if(controllers.down(0, GameControllers::LEFT)) {  //check if B button it's currently pressed down
     Serial.println("LEFT");
     plowLeft = 10;
