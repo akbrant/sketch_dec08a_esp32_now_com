@@ -25,6 +25,7 @@ typedef struct struct_touch_message {
     int plowRaise;
     int plowFloat;
     int plowPressure;
+    int plowRaiseTimer;
 } struct_touch_message;
 
 //Create a sttuck_touch_message to hold touch readings
@@ -87,6 +88,7 @@ void setup()
   int plowRaise = 0;
   int plowFloat = 0;
   int plowPressure = 0;
+  int plowRaiseTimer = 0;
   int loopcount = 0;
 void loop()
 {
@@ -103,14 +105,14 @@ void loop()
   } else {
     plowPressure =200;
   }
-/*
- if(controllers.pressed(0, GameControllers::A)) {  //if A button is hold down
-    Serial.println("A FLOAT");
-    plowFloat = 10;
-  } else {
-    plowFloat =200;
-  }
- */
+
+ if(controllers.down(0, GameControllers::A)) {  //if A button is hold down
+    Serial.println("A FLOAT TIMER");
+    plowRaiseTimer = 8;
+     } else {
+    plowRaiseTimer = 0;
+  } 
+
   if(controllers.down(0, GameControllers::UP)) {  //check if button it's currently pressed down
     Serial.println("UP");
     plowRaise = 10;
@@ -145,6 +147,7 @@ void loop()
   TouchReadings.plowRaise = plowRaise;
   TouchReadings.plowFloat = plowFloat;
   TouchReadings.plowPressure = plowPressure;
+  TouchReadings.plowRaiseTimer = plowRaiseTimer;
 
   // Send message via ESP-NOW
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &TouchReadings, sizeof(TouchReadings));

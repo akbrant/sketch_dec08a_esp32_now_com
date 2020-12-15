@@ -29,6 +29,8 @@ int plowRight;
 int plowRaise;
 int plowFloat;
 int plowPressure;
+int plowRaiseTimer;
+int plowRaiseTimerRun;
 
 //Structure of touch sensor values to be received
 typedef struct struct_touch_message {
@@ -37,6 +39,7 @@ typedef struct struct_touch_message {
     int plowRaise;
     int plowFloat;
     int plowPressure;
+    int plowRaiseTimer;
 } struct_touch_message;
 
 //Create a sttuck_touch_message to hold touch readings
@@ -56,6 +59,10 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   plowRaise = incomingReadings.plowRaise;
   plowFloat = incomingReadings.plowFloat;
   plowPressure = incomingReadings.plowPressure;
+  if (plowRaiseTimerRun == 0) {  //only read timer value if done with raise actions. 
+    plowRaiseTimer = incomingReadings.plowRaiseTimer;
+    plowRaiseTimerRun = plowRaiseTimer;
+  }
 }
  
 void setup() {
@@ -126,6 +133,8 @@ void loop() {
   Serial.print (floating);
   Serial.print (" DP_state ");
   Serial.print (downPressure);
+  Serial.print (" Float timer: ");
+  Serial.print (plowRaiseTimerRun);
   Serial.println();
 
   if ((plowLeft < CapacitanciaMaxima) && Contact)
@@ -152,6 +161,22 @@ void loop() {
       digitalWrite (valveE, HIGH);
     }
   }
+  else if ((plowRaiseTimerRun > 0) && Contact)
+  {
+    floating = 0;
+    downPressure = 0;
+    plowRaiseTimerRun--;
+    Serial.println("plow raise timer");
+    digitalWrite (motor, LOW);
+    digitalWrite (valveC, LOW);
+    digitalWrite (valveF, LOW);
+    //all other valves high
+    digitalWrite (valveA, HIGH);
+    digitalWrite (valveB, HIGH);
+    digitalWrite (valveD, HIGH);
+    digitalWrite (valveE, HIGH);
+    digitalWrite (powerDown, HIGH);
+  }  
   else if ((plowRaise < CapacitanciaMaxima) && Contact)
   {
     floating = 0;
