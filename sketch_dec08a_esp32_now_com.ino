@@ -6,8 +6,8 @@
 #include <Arduino_JSON.h>
 
 // Replace with your network credentials (STATION)
-const char* ssid = "crusher6000";
-const char* password = "jamiebrant";
+const char* ssid = "weplowing";
+const char* password = "123456789";
 
 #define BOARD_ID 1
 
@@ -206,13 +206,11 @@ void setup() {
   WiFi.mode(WIFI_AP_STA);
   
   // Set device as a Wi-Fi Station
-  WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(1000);
-    Serial.println("Setting as a Wi-Fi Station..");
-  }
+  WiFi.softAP(ssid, password);
+  
+  delay(1000);
   Serial.print("Station IP Address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println(WiFi.softAPIP());
   Serial.print("Wi-Fi Channel: ");
   Serial.println(WiFi.channel());
 
@@ -383,5 +381,5 @@ void loop() {
     }       
   }
   
-  delay (200);
+  delay (100);
 }
