@@ -114,19 +114,19 @@ void loop()
   } 
 
   if(controllers.down(0, GameControllers::UP)) {  //check if button it's currently pressed down
-    Serial.println("UP");
-    plowRaise = 10;
-  } else {
-    plowRaise =200;
-  }
-  
-  if(controllers.down(0, GameControllers::DOWN)) {  //check if button it's currently pressed down
     Serial.println("DOWN FLOAT");
     plowFloat = 10;
   } else {
     plowFloat =200;
+  }
+  
+  if(controllers.down(0, GameControllers::DOWN)) {  //check if button it's currently pressed down
+    Serial.println("UP");
+    plowRaise = 10;
+  } else {
+    plowRaise =200;
   } 
-    
+     
   if(controllers.down(0, GameControllers::LEFT)) {  //check if B button it's currently pressed down
     Serial.println("LEFT");
     plowLeft = 10;
