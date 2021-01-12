@@ -90,35 +90,47 @@ void setup()
   int plowPressure = 0;
   int plowRaiseTimer = 0;
   int loopcount = 0;
+  int buttB = 0;  //flag if button B is being pressed, so up block will not turn off float. 
 void loop()
 {
   loopcount ++;
   controllers.poll(); //read all controllers at once
   if(controllers.down(0, GameControllers::START))  //check if Start was pressed since last loop
     Serial.println("Start was pressed.");
-  if(controllers.down(0, GameControllers::SELECT))  //check if Start was pressed since last loop
+  if(controllers.down(0, GameControllers::SELECT)) {  //check if Start was pressed since last loop
     Serial.println("Select was pressed.");
-    
- if(controllers.down(0, GameControllers::B)) {  //if B button is hold down 
     Serial.println("B DP");
     plowPressure = 10;
   } else {
     plowPressure =200;
+    
+  }
+ if(controllers.down(0, GameControllers::B)) {  //if B button is hold down 
+    Serial.println("DOWN FLOAT B");
+    buttB = 1;
+    plowFloat = 10;
+  } else {
+    plowFloat =200;
+    buttB =0;
+  }
+
+  if( controllers.down(0, GameControllers::UP)) {  //check if button it's currently pressed down
+    Serial.println("DOWN FLOAT");
+    plowFloat = 10;
+  } else if ( buttB) {
+    plowFloat = 10;
+  } else {
+    plowFloat = 200;
   }
 
  if(controllers.down(0, GameControllers::A)) {  //if A button is hold down
-    Serial.println("A FLOAT TIMER");
-    plowRaiseTimer = 8;
+    Serial.println("A Raise TIMER");
+    plowRaiseTimer = 16;
      } else {
     plowRaiseTimer = 0;
   } 
 
-  if(controllers.down(0, GameControllers::UP)) {  //check if button it's currently pressed down
-    Serial.println("DOWN FLOAT");
-    plowFloat = 10;
-  } else {
-    plowFloat =200;
-  }
+
   
   if(controllers.down(0, GameControllers::DOWN)) {  //check if button it's currently pressed down
     Serial.println("UP");

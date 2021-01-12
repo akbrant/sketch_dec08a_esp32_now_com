@@ -29,6 +29,9 @@ int floating = 0;  //track if plow should be locked in float mode.
 int downPressure = 0;  //track if plow should be locked in down pressure mode. 
 int Contact = 0;
 
+int timelastDPorFloat = 0;  //trace last time DP or flaot was activated so we can turn off relays after maxTimeDPforFloat, if plow left in float or DP over night battery will die. 
+int maxTimeDPorFloat = 60 * 60 *2 * 1000;  //60 sec, 60 sec per min, 1000 min sec in 
+int loopcount = 0;
 
 // Define variables to store incoming readings
 int plowLeft;
@@ -253,25 +256,33 @@ void setup() {
 }
  
 void loop() {
- 
-  //Serial.println ("Touch Values via esp32 NOW radio:");
-  Serial.print ("L: ");
-  Serial.print (plowLeft);
-  Serial.print (" R: ");
-  Serial.print (plowRight);
-  Serial.print (" Ra: ");
-  Serial.print (plowRaise);
-  Serial.print (" F: ");
-  Serial.print (plowFloat);
-  Serial.print (" DP: ");
-  Serial.print (plowPressure);
-  Serial.print (" F_state: ");
-  Serial.print (floating);
-  Serial.print (" DP_state ");
-  Serial.print (downPressure);
-  Serial.print (" Float timer: ");
-  Serial.print (plowRaiseTimerRun);
-  Serial.println();
+
+  loopcount ++;
+
+  if (loopcount % 1000) {
+    Serial.print ("L: ");
+    Serial.print (plowLeft);
+    Serial.print (" R: ");
+    Serial.print (plowRight);
+    Serial.print (" Ra: ");
+    Serial.print (plowRaise);
+    Serial.print (" F: ");
+    Serial.print (plowFloat);
+    Serial.print (" DP: ");
+    Serial.print (plowPressure);
+    Serial.print (" F_state: ");
+    Serial.print (floating);
+    Serial.print (" DP_state ");
+    Serial.print (downPressure);
+    Serial.print (" Float timer: ");
+    Serial.print (plowRaiseTimerRun);
+    Serial.print (" timelastDPorFloat: ");
+    Serial.print (timelastDPorFloat);
+    Serial.print (" loop count: ");
+    Serial.print (loopcount);
+    Serial.println();
+  }
+  
 
   if ((plowLeft < CapacitanciaMaxima) && Contact)
   {
@@ -330,6 +341,7 @@ void loop() {
   }
   else if ((plowFloat < CapacitanciaMaxima) && Contact)
   {
+    timelastDPorFloat = loopcount;
     floating = 1;
     downPressure = 0;
     Serial.println("plow float");
@@ -346,6 +358,7 @@ void loop() {
   }
   else if ((plowPressure < CapacitanciaMaxima) && Contact)
   {
+    timelastDPorFloat = loopcount;
     floating = 0;
     downPressure = 1;
     Serial.println("plow down pressure");
@@ -362,6 +375,12 @@ void loop() {
   
   // if none of the touch pins are being touched, the set valves to last states
   else {
+
+    if ((loopcount - timelastDPorFloat) > 1000  ) {
+      floating = 0;
+      downPressure = 0;
+    }
+    
     digitalWrite (motor, HIGH);
     digitalWrite (valveA, HIGH);    
     digitalWrite (valveC, HIGH);
