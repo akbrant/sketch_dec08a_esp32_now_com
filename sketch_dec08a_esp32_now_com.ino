@@ -30,7 +30,7 @@ int downPressure = 0;  //track if plow should be locked in down pressure mode.
 int Contact = 0;
 
 int timelastDPorFloat = 0;  //trace last time DP or flaot was activated so we can turn off relays after maxTimeDPforFloat, if plow left in float or DP over night battery will die. 
-int maxTimeDPorFloat = 60 * 60 *2 * 1000;  //60 sec, 60 sec per min, 1000 min sec in 
+int maxTimeDPorFloat = 5000;  //1000 loops takes 50 secs, so time out in around 4.1 mins in testing. 
 int loopcount = 0;
 
 // Define variables to store incoming readings
@@ -376,7 +376,7 @@ void loop() {
   // if none of the touch pins are being touched, the set valves to last states
   else {
 
-    if ((loopcount - timelastDPorFloat) > 1000  ) {
+    if ((loopcount - timelastDPorFloat) > maxTimeDPorFloat  ) {
       floating = 0;
       downPressure = 0;
     }
